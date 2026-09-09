@@ -1,0 +1,360 @@
+/**
+ * PearlEdu — system-wide mobile responsiveness (app layout).
+ * Loaded from layouts/app.blade.php for all authenticated school & platform pages.
+ */
+
+@media (max-width: 800px) {
+  html {
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+  }
+
+  body.sidebar-open {
+    overflow: hidden;
+  }
+
+  /* Page headers */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-header__actions {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .page-header__actions .btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .page-header__actions form {
+    flex: 1 1 100%;
+  }
+
+  .page-header__actions form .btn {
+    width: 100%;
+  }
+
+  /* Cards */
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .stat .v {
+    font-size: 22px;
+  }
+
+  /* Wide tables scroll inside their container (preserves table layout) */
+  .card:has(table:not(.reg-table)),
+  .wrap > table,
+  .lp-panel:has(table),
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .card table:not(.reg-table),
+  .wrap > table:not(.reg-table),
+  .lp-panel > table,
+  .table-scroll > table {
+    display: table;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .marks-grid,
+  .tt-grid,
+  .staff-table,
+  .teach-matrix {
+    min-width: 480px;
+  }
+
+  /* Stack filter / toolbar forms that use inline flex */
+  .card > form[style*="display:flex"],
+  .card > form[style*="display: flex"],
+  .wrap > form[style*="display:flex"],
+  .wrap > form[style*="display: flex"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .card > form[style*="display:flex"] > *,
+  .card > form[style*="display: flex"] > *,
+  .wrap > form[style*="display:flex"] > *,
+  .wrap > form[style*="display: flex"] > * {
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important;
+  }
+
+  .pe-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pe-toolbar > * {
+    width: 100%;
+  }
+
+  .teach-builder__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .teach-builder__actions .btn {
+    width: 100%;
+  }
+
+  /* Modals */
+  .pe-modal,
+  .pe-modal--wide,
+  .pe-modal--form {
+    width: calc(100vw - 24px);
+    max-width: none;
+    margin: auto;
+  }
+
+  .pe-modal__card {
+    padding: 16px;
+    max-height: calc(100dvh - 32px);
+  }
+
+  /* Learner profile */
+  .lp-rail,
+  .lp-panel {
+    padding: 14px;
+  }
+
+  .lp-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px;
+    padding-bottom: 2px;
+  }
+
+  .lp-tabs span,
+  .lp-tabs a {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Dashboard grids */
+  .dash-tiles,
+  .hygiene-tiles,
+  .exam-set__grid,
+  .funnel,
+  .heat,
+  .workspace-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .child-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ws-greet {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ws-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ws-ring {
+    width: 108px;
+    height: 108px;
+  }
+
+  .ws-ring__hole {
+    width: 72px;
+    height: 72px;
+  }
+
+  /* Banners & nav */
+  .impersonation-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .impersonation-banner__btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .pager a,
+  .pager span,
+  nav[aria-label*="Pagination"] a,
+  nav[aria-label*="Pagination"] span {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .att-btns {
+    width: 100%;
+  }
+
+  .role-picks {
+    grid-template-columns: 1fr;
+  }
+
+  .emis-filter {
+    padding: 12px 14px;
+  }
+
+  .emis-filter .grid,
+  .emis-filter form {
+    gap: 10px;
+  }
+
+  .topbar {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+
+  /* Fee receipt & print-adjacent layouts */
+  .fee-receipt-head {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* App header — single row, hamburger stays tappable above drawer */
+  .app-header__row {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .topbar__brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .app-header__end {
+    flex-shrink: 0;
+    margin-left: auto;
+    gap: 6px;
+  }
+
+  /* Sidebar drawer */
+  .sidebar__nav {
+    scroll-behavior: smooth;
+  }
+
+  .sidebar__group > summary {
+    min-height: 44px;
+  }
+
+  /* Header dropdown panels (notifications & profile) */
+  .header-dropdown-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 140;
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+
+  body.header-dropdown-open .app-col > :not(.app-header) {
+    pointer-events: none;
+  }
+
+  body.header-dropdown-open .app-header {
+    pointer-events: auto;
+    z-index: 145;
+  }
+
+  /* Ported panels live on body — above backdrop, below nothing critical */
+  .header-dropdown__panel.is-ported {
+    display: block !important;
+    position: fixed !important;
+    z-index: 150 !important;
+    margin: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .header-dropdown.is-open > .notification-bell__trigger,
+  .header-dropdown.is-open > .user-menu__trigger {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    position: relative;
+    z-index: 146;
+  }
+
+  .user-menu__link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .notification-bell__mark-all,
+  .notification-bell__read {
+    min-height: 36px;
+    padding: 6px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-tiles,
+  .child-cards,
+  .dash-tiles,
+  .hygiene-tiles,
+  .dash-stats,
+  .workspace-kpis,
+  .funnel,
+  .heat,
+  .exam-set__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-tile {
+    min-height: 64px;
+    padding: 12px;
+  }
+
+  .portal-tile__glyph {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .page-header__title {
+    font-size: 20px;
+  }
+
+  .brand__tagline {
+    display: none;
+  }
+
+  .user-menu__trigger {
+    max-width: 132px;
+    padding: 6px 8px;
+  }
+}
