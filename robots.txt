@@ -1,2 +1,12 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Authenticated school app, nothing for crawlers behind the login
+Disallow: /login
+Disallow: /password/
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /school/
+Disallow: /staff/
+
+Sitemap: https://voxsign.co.ug/sitemap.xml

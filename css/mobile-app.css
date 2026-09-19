@@ -1,5 +1,5 @@
 /**
- * PearlEdu — system-wide mobile responsiveness (app layout).
+ * PearlEdu: system-wide mobile responsiveness (app layout).
  * Loaded from layouts/app.blade.php for all authenticated school & platform pages.
  */
 
@@ -238,7 +238,7 @@
     gap: 12px !important;
   }
 
-  /* App header — single row, hamburger stays tappable above drawer */
+  /* App header: single row, hamburger stays tappable above drawer */
   .app-header__row {
     flex-wrap: nowrap;
     gap: 8px;
@@ -283,7 +283,7 @@
     z-index: 145;
   }
 
-  /* Ported panels live on body — above backdrop, below nothing critical */
+  /* Ported panels live on body, above backdrop, below nothing critical */
   .header-dropdown__panel.is-ported {
     display: block !important;
     position: fixed !important;

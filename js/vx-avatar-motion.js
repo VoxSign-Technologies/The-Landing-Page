@@ -151,7 +151,7 @@ export function createAvatarMotion(THREE, root, options) {
   var tmpQ = new THREE.Quaternion();
   var tmpE = new THREE.Euler();
 
-  // Public channel — scroll guide / page scripts can write here anytime
+  // Public channel: scroll guide and page scripts can write here anytime
   if (!window.__VX_AVATAR_MOTION__) {
     window.__VX_AVATAR_MOTION__ = {
       pose: 'hero',
@@ -301,18 +301,21 @@ export function createAvatarMotion(THREE, root, options) {
       applyBoneOffsets(current, breath, swing, look.x, look.y, extra);
     }
 
-    // Whole-rig liveliness (works even when body mesh is unskinned)
-    var bob = Math.sin(t * (2.2 + speed * 3)) * (0.012 + speed * 0.045);
-    var sway = Math.sin(t * 0.7) * 0.015;
-    root.position.y = baseY + bob;
-    root.rotation.z = sway * 0.4 + (m.side || 1) * speed * 0.04;
+    // The figure stands on the floor. Feet stay planted at baseY: no bob, no drift.
+    // Weight shift is expressed through the spine and shoulders above, not by
+    // moving the whole rig through space.
+    root.position.y = baseY;
+
+    // A standing person does not roll side to side. Only a scroll-driven lean is
+    // allowed, and only while the page is actually moving.
+    root.rotation.z = (m.side || 1) * speed * 0.02;
+
     var pitch = dragState && typeof dragState.pitch === 'number' ? dragState.pitch : 0;
-    root.rotation.x = pitch - speed * 0.03;
+    root.rotation.x = pitch;
 
     if (dragState) {
-      if (options.autoRotate && !dragState.active && !dragState.userTurned) {
-        dragState.yaw += 0.0018 + speed * 0.004;
-      }
+      // Idle no longer spins. The figure faces the reader and holds that facing
+      // until the reader drags it. Turning is a response to input, not ambience.
       root.rotation.y = dragState.yaw;
     }
   }

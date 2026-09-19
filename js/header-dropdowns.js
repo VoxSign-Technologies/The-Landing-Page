@@ -1,5 +1,5 @@
 /**
- * PearlEdu — header notification & profile dropdowns (mobile-safe).
+ * PearlEdu: header notification & profile dropdowns (mobile-safe).
  * On narrow viewports, panels are moved to document.body and positioned with
  * the visual viewport so sticky headers cannot clip or offset them.
  */
