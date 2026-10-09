@@ -2,7 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VoxSign — Ugandan Sign Language and school operations</title>
+<title>VoxSign — Ugandan Sign Language tools and PearlEdu school management</title>
+<meta name="description" content="VoxSign makes Ugandan Sign Language and speech accessibility tools for Deaf and speech-impaired people, and PearlEdu, school management for Ugandan schools.">
+<link rel="canonical" href="https://voxsign.co.ug/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VoxSign">
+<meta property="og:title" content="VoxSign — Ugandan Sign Language tools and PearlEdu school management">
+<meta property="og:description" content="VoxSign makes Ugandan Sign Language and speech accessibility tools for Deaf and speech-impaired people, and PearlEdu, school management for Ugandan schools.">
+<meta property="og:url" content="https://voxsign.co.ug/">
+<meta property="og:image" content="https://voxsign.co.ug/images/voxsign/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="VoxSign — Sign language software, built in Uganda. VoxSign Accessibility and PearlEdu for Institutions.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VoxSign — Ugandan Sign Language tools and PearlEdu school management">
+<meta name="twitter:description" content="VoxSign makes Ugandan Sign Language and speech accessibility tools for Deaf and speech-impaired people, and PearlEdu, school management for Ugandan schools.">
+<meta name="twitter:image" content="https://voxsign.co.ug/images/voxsign/og-card.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://voxsign.co.ug/#org",
+   "name": "VoxSign",
+   "url": "https://voxsign.co.ug/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://voxsign.co.ug/images/brand/logo-512.png",
+    "width": 512,
+    "height": 512
+   },
+   "email": "info@voxsign.co.ug",
+   "telephone": "+256770680769",
+   "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "UG"
+   },
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "info@voxsign.co.ug",
+    "telephone": "+256770680769",
+    "areaServed": "UG",
+    "availableLanguage": [
+     "en"
+    ]
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://voxsign.co.ug/#website",
+   "url": "https://voxsign.co.ug/",
+   "name": "VoxSign",
+   "publisher": {
+    "@id": "https://voxsign.co.ug/#org"
+   },
+   "inLanguage": "en"
+  }
+ ]
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4">
 <link rel="icon" href="/favicon.ico?v=4" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=4">
@@ -22,16 +83,15 @@
   } catch (e) {}
 })();
 </script>
-<link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap"></noscript>
 <style>
   :root{
     --ink:#053F5C; --ink-2:#034A6B; --paper:#F5FBFD; --surface:#FFFFFF;
     --fg:#053F5C; --logo:#053F5C;
-    --voice:#F27F0C; --sign:#429EBD; --cyan:#9FE7F5; --gold:#F7AD19;
+    --voice:#F27F0C; --voice-text:#A84A00; --sign:#429EBD; --cyan:#9FE7F5; --gold:#F7AD19;
     --muted:#4A6270; --line:#D4E8EE;
     --ink-line:rgba(255,255,255,.12); --ink-muted:#9FE7F5;
     --nav-bg:var(--surface);
@@ -42,7 +102,7 @@
   html[data-theme="dark"]{
     color-scheme:dark;
     --paper:#0B1220; --surface:#141B2A; --fg:#E8EEF5; --logo:#FFFFFF;
-    --muted:#9AA8B8; --line:#2A3447;
+    --muted:#9AA8B8; --line:#2A3447; --voice-text:#F27F0C;
     --nav-bg:var(--surface);
     --input-bg:#141B2A; --status-bg:rgba(66,158,189,.16);
   }
@@ -112,7 +172,7 @@
   .vx-band .vx-btn-ghost:hover{border-color:#fff}
   .vx-section:nth-of-type(even):not(.vx-band){background:var(--surface)}
 
-  .vx-eyebrow{display:block;font-family:var(--display);font-size:12px;letter-spacing:.14em;color:var(--voice);font-weight:700;margin-bottom:14px;text-transform:uppercase}
+  .vx-eyebrow{display:block;font-family:var(--display);font-size:12px;letter-spacing:.14em;color:var(--voice-text);font-weight:700;margin-bottom:14px;text-transform:uppercase}
   .vx-band .vx-eyebrow{color:var(--cyan)}
   .vx-h1{font-size:clamp(32px,5.2vw,56px);font-weight:800;line-height:1.08;max-width:740px;margin:0 0 18px}
   .vx-h1 .vx-flow{color:var(--cyan)}
@@ -126,7 +186,7 @@
           background:var(--ink);color:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:12px 22px;cursor:pointer}
   .vx-btn:hover{background:var(--ink-2);border-color:var(--ink-2)}
   .vx-btn-grad{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:15px;
-          background:var(--voice);color:#fff;border:0;border-radius:8px;padding:13px 24px;cursor:pointer}
+          background:var(--voice);color:#0B1220;border:0;border-radius:8px;padding:13px 24px;cursor:pointer}
   .vx-btn-grad:hover{filter:brightness(1.05)}
   .vx-btn-ghost{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:15px;
                 background:transparent;color:var(--fg);border:1.5px solid var(--line);border-radius:8px;padding:12px 22px;cursor:pointer}
@@ -140,10 +200,10 @@
   @media(max-width:480px){.vx-grid-team{gap:10px}.vx-grid-team .vx-card{padding:10px}.vx-grid-team .vx-card h3{font-size:14px}.vx-grid-team .vx-card p{font-size:12px}}
   .vx-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
   .vx-band .vx-card{background:rgba(255,255,255,.04);border-color:var(--ink-line)}
-  .vx-band .vx-card h3{color:#fff}
+  .vx-band .vx-card h3,.vx-band .vx-card .vx-h3{color:#fff}
   .vx-band .vx-card p{color:var(--ink-muted)}
-  .vx-card img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:12px;border-radius:8px}
-  .vx-card h3{margin:0 0 6px;font-size:18px;font-weight:700}
+  .vx-card img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;margin-bottom:12px;border-radius:8px}
+  .vx-card h3,.vx-card .vx-h3{margin:0 0 6px;font-size:18px;font-weight:700;line-height:1.2}
   .vx-card p{margin:0;color:var(--muted);font-size:14px}
 
   .vx-hero-copy strong{color:#fff}
@@ -189,10 +249,10 @@
   .vx-footer-brand svg{height:28px;width:auto}
   .vx-footer-tagline{color:#aeb4c2;font-size:14px;margin:0 0 36px}
   .vx-footer-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,.12)}
-  .vx-footer-col h4{font-family:var(--display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin:0 0 14px}
+  .vx-footer-col h4,.vx-footer-col .vx-footer-h{font-family:var(--display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin:0 0 14px}
   .vx-footer-col a,.vx-footer-col span{display:block;color:#c7cdda;font-size:14px;margin-bottom:10px}
   .vx-footer-col a:hover{color:#fff}
-  .vx-footer-bottom{padding-top:20px;font-size:13px;color:#8b93a5}
+  .vx-footer-bottom{padding-top:20px;font-size:13px;color:#B8C0CF}
   @media(max-width:640px){.vx-footer-cols{grid-template-columns:1fr;gap:28px}}
 
   .vx-reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
@@ -207,8 +267,6 @@
   }
 }
 </script>
-<link rel="preload" href="/models/avatar.glb" as="fetch">
-<link rel="modulepreload" href="/vendor/three-0.170.0/three.module.js">
 </head>
 <body>
   <a class="vx-skip" href="#main">Skip to content</a>
@@ -287,8 +345,11 @@
       </div>
       <div class="vx-hero-avatar-wrap" tabindex="0">
         <div class="vx-hero-avatar-stage" aria-hidden="true"></div>
-        <div id="vx-hero-avatar-3d" class="vx-hero-avatar-3d" role="img" aria-label="Signing avatar. Drag to turn it, move the pointer to look around, or click to wave."></div>
+        <div id="vx-hero-avatar-3d" class="vx-hero-avatar-3d" role="img" aria-label="VoxSign signing avatar: a 3D human figure. Drag to turn it or click to wave.">
+          <img class="vx-avatar-poster" src="/images/avatar/avatar-poster-480.webp" srcset="/images/avatar/avatar-poster-480.webp 480w, /images/avatar/avatar-poster-960.webp 960w" sizes="(max-width: 900px) 70vw, 480px" width="480" height="680" alt="" decoding="async">
+        </div>
         <p class="vx-hero-avatar-hint" aria-hidden="true">Drag to turn · Click to wave</p>
+        <button type="button" class="vx-avatar-load-btn" hidden>View the 3D avatar</button>
       </div>
     </div>
   </div>
@@ -320,29 +381,91 @@
   .vx-hero-avatar-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:2;
     margin:0;padding:6px 12px;border-radius:6px;font-size:12px;font-family:var(--display);
     letter-spacing:.04em;color:rgba(255,255,255,.85);background:rgba(5,63,92,.45);
-    border:1px solid rgba(159,231,245,.35);pointer-events:none;opacity:.9}
+    border:1px solid rgba(159,231,245,.35);pointer-events:none;opacity:.9;white-space:nowrap}
   .vx-hero-avatar-wrap.is-dragging .vx-hero-avatar-hint,
   .vx-hero-avatar-wrap.has-interacted .vx-hero-avatar-hint{opacity:0}
-  .vx-avatar-fallback{display:flex;align-items:center;justify-content:center;height:100%}
+  /* Still image of the figure: shown first, kept as the fallback. */
+  .vx-hero-avatar-3d .vx-avatar-poster{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    height:100%;width:auto;max-width:100%;object-fit:contain;pointer-events:none;user-select:none}
+  .vx-hero-avatar-3d .vx-avatar-poster[hidden]{display:none}
+  .vx-hero-avatar-3d canvas{position:relative;z-index:1}
+  .vx-avatar-loading--poster{justify-content:flex-end;padding-bottom:56px}
+  .vx-avatar-loading--poster .vx-avatar-loading-silhouette{display:none}
+  .vx-hero-avatar-wrap:not(.is-3d){cursor:default}
+  .vx-hero-avatar-wrap:not(.is-3d) .vx-hero-avatar-hint{opacity:0}
+  .vx-avatar-load-btn{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:3;
+    padding:8px 14px;border-radius:6px;font:600 13px/1.2 var(--display);color:#fff;cursor:pointer;
+    background:rgba(5,63,92,.7);border:1px solid rgba(159,231,245,.55)}
+  .vx-avatar-load-btn:hover{background:rgba(5,63,92,.9)}
   @media(prefers-reduced-motion:reduce){
     .vx-hero-avatar-hint{display:none}
     .vx-hero-avatar-wrap{cursor:default}
   }
 </style>
 <script type="module">
-  import { mountAvatar } from '/js/vx-avatar-loader.js?v=17';
+  // The poster image above is the first paint (and the fallback). The 3D model
+  // (three.js + a 4 MB glTF) loads only after the page has loaded and the
+  // visitor interacts (or 3.5 s pass), once the hero is on or near the screen. With reduced motion or data saver on, it
+  // waits for the visitor to ask for it.
+  import { mountAvatar } from '/js/vx-avatar-loader.js?v=18';
+  var wrap = document.querySelector('.vx-hero-avatar-wrap');
+  var btn = wrap && wrap.querySelector('.vx-avatar-load-btn');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  mountAvatar({
-    container: 'vx-hero-avatar-3d',
-    mode: 'idle',
-    frame: 'full',
-    interactive: !reduce,
-    autoRotate: !reduce,
-    width: 480,
-    height: 680,
-    modelUrl: '/models/avatar.glb',
-    decoderPath: '/vendor/draco/1.5.7/',
-  });
+  var conn = navigator.connection || {};
+  var lite = !!conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+  var started = false;
+
+  function start() {
+    if (started || !wrap) return;
+    started = true;
+    if (btn) btn.hidden = true;
+    mountAvatar({
+      container: 'vx-hero-avatar-3d',
+      mode: 'idle',
+      frame: 'full',
+      interactive: true,
+      autoRotate: !reduce,
+      width: 480,
+      height: 680,
+      modelUrl: '/models/avatar.glb',
+      decoderPath: '/vendor/draco/1.5.7/',
+      posterAlt: '',
+    });
+  }
+
+  // Start on the visitor's first scroll, touch, key or mouse move, or 3.5 s
+  // after load, whichever comes first. The 3D work then can't hold up the
+  // hero text paint (LCP) or the first interactions.
+  function whenIdle(fn) {
+    var done = false, evs = ['pointerdown', 'touchstart', 'scroll', 'keydown', 'mousemove'];
+    function go() {
+      if (done) return;
+      done = true;
+      evs.forEach(function (e) { removeEventListener(e, go, { passive: true }); });
+      if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1500 });
+      else setTimeout(fn, 50);
+    }
+    evs.forEach(function (e) { addEventListener(e, go, { passive: true, once: true }); });
+    setTimeout(go, 3500);
+  }
+
+  function startWhenVisible() {
+    if (!('IntersectionObserver' in window)) { start(); return; }
+    var io = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); start(); }
+    }, { rootMargin: '200px 0px' });
+    io.observe(wrap);
+  }
+
+  if (wrap) {
+    if (reduce || lite) {
+      if (btn) { btn.hidden = false; btn.addEventListener('click', start); }
+    } else if (document.readyState === 'complete') {
+      whenIdle(startWhenVisible);
+    } else {
+      window.addEventListener('load', function () { whenIdle(startWhenVisible); }, { once: true });
+    }
+  }
 </script>
   <section class="vx-section">
   <div class="vx-wrap vx-reveal">
@@ -354,7 +477,7 @@
         <h3>VoxSign Accessibility</h3>
         <p>Tools for Deaf, hard-of-hearing, and speech-impaired users — Ugandan Sign Language translation and assistive speech recognition.</p>
         <p class="vx-cta-row" style="margin-top:14px">
-          <a href="#accessibility" class="vx-btn-ghost">Learn more</a>
+          <a href="#accessibility" class="vx-btn-ghost">More about Accessibility</a>
           <a href="https://accessibility.voxsign.co.ug" class="vx-btn-grad">Get Started</a>
         </p>
       </div>
@@ -362,7 +485,7 @@
         <h3>VoxSign Institutions</h3>
         <p>A school management platform for institutions — attendance, grading, fees, and communication in one place.</p>
         <p class="vx-cta-row" style="margin-top:14px">
-          <a href="/products/pearledu" class="vx-btn-ghost">Learn more</a>
+          <a href="/products/pearledu" class="vx-btn-ghost">More about PearlEdu</a>
           <a href="https://pearledu.voxsign.co.ug" class="vx-btn-grad">Get Started</a>
         </p>
       </div>
@@ -387,10 +510,10 @@
     </div>
 
     <div class="vx-partner-logos">
-                        <img src="/images/voxsign/partner-unad.png" alt="Uganda National Association of the Deaf">
-                                <img src="/images/voxsign/partner-kyu.png" alt="Kyambogo University — Faculty of Special Needs &amp; Rehabilitation">
-                                <img src="/images/voxsign/partner-youtube.webp" alt="YouTube">
-                                <img src="/images/voxsign/partner-4.jpg" alt="TGN Systems">
+                        <img src="/images/voxsign/web/partner-unad-84h.webp" alt="Uganda National Association of the Deaf logo" width="163" height="42" loading="lazy" decoding="async">
+                                <img src="/images/voxsign/web/partner-kyu-84h.webp" alt="Kyambogo University — Faculty of Special Needs &amp; Rehabilitation logo" width="140" height="42" loading="lazy" decoding="async">
+                                <img src="/images/voxsign/web/partner-youtube-84h.webp" alt="YouTube logo" width="42" height="42" loading="lazy" decoding="async">
+                                <img src="/images/voxsign/web/partner-tgn-84h.webp" alt="TGN Systems logo" width="105" height="42" loading="lazy" decoding="async">
                                               </div>
   </div>
 </section>
@@ -430,37 +553,37 @@
     <h2 class="vx-h2 vx-sec-head">The people behind VoxSign.</h2>
     <div class="vx-grid vx-grid-team">
               <div class="vx-card">
-                      <img src="/images/voxsign/team-victor.jpg" alt="Tusuubira Victor">
+                      <img src="/images/voxsign/web/team-victor-480.webp" alt="Portrait of Tusuubira Victor" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Tusuubira Victor</h3>
           <p>CEO/Founder</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-kamanzi.jpg" alt="Kamanzi Ahmed">
+                      <img src="/images/voxsign/web/team-kamanzi-480.webp" alt="Portrait of Kamanzi Ahmed" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Kamanzi Ahmed</h3>
           <p>Head of Marketing and Operations</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-joan.jpg" alt="Muwanguzi Joan Najjingo">
+                      <img src="/images/voxsign/web/team-joan-480.webp" alt="Portrait of Muwanguzi Joan Najjingo" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Muwanguzi Joan Najjingo</h3>
           <p>Finance and Sales Manager</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-alex.jpg" alt="Muhumuza Alex">
+                      <img src="/images/voxsign/web/team-alex-480.webp" alt="Portrait of Muhumuza Alex" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Muhumuza Alex</h3>
           <p>Head of Product Development</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-sandra.jpg" alt="Naikambo Sandra">
+                      <img src="/images/voxsign/web/team-sandra-480.webp" alt="Portrait of Naikambo Sandra" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Naikambo Sandra</h3>
           <p>Sign Language Specialist and Consultant</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-aaron.png" alt="Aaron Francis Taremwa">
+                      <img src="/images/voxsign/web/team-aaron-480.webp" alt="Portrait of Aaron Francis Taremwa" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Aaron Francis Taremwa</h3>
           <p>Product Development Expert</p>
         </div>
               <div class="vx-card">
-                      <img src="/images/voxsign/team-ebrine.jpg" alt="Ebrine Tushabe">
+                      <img src="/images/voxsign/web/team-ebrine-480.webp" alt="Portrait of Ebrine Tushabe" width="480" height="480" loading="lazy" decoding="async">
                     <h3>Ebrine Tushabe</h3>
           <p>Product Development Expert</p>
         </div>
@@ -530,18 +653,18 @@
       <p class="vx-footer-tagline">Ugandan Sign Language tools and school operations software.</p>
       <div class="vx-footer-cols">
         <div class="vx-footer-col">
-          <h4>Products</h4>
+          <h2 class="vx-footer-h">Products</h2>
           <a href="https://accessibility.voxsign.co.ug">VoxSign Accessibility</a>
           <a href="/products/pearledu">PearlEdu</a>
           <a href="https://pearledu.voxsign.co.ug">Open PearlEdu</a>
         </div>
         <div class="vx-footer-col">
-          <h4>Company</h4>
+          <h2 class="vx-footer-h">Company</h2>
           <a href="#team">Team</a>
           <a href="#contact">Contact</a>
         </div>
         <div class="vx-footer-col">
-          <h4>Contact</h4>
+          <h2 class="vx-footer-h">Contact</h2>
           <span>+256 770 680769</span>
           <span>info@voxsign.co.ug</span>
         </div>

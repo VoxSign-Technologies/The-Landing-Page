@@ -1,0 +1,8 @@
+# Everything under /vendor/ lives in a versioned folder (three-0.170.0,
+# draco/1.5.7) and never changes in place: cache it for a year.
+# (Inside <FilesMatch> so it is applied after the site-wide rules.)
+<IfModule mod_headers.c>
+    <FilesMatch ".">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>

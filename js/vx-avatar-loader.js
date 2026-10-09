@@ -26,6 +26,33 @@ export function mountAvatar(config) {
   var height = config.height || 320;
   var captionIndex = 0;
   var interactHost = container.closest('.vx-scroll-avatar-stage') || container.closest('.vx-hero-avatar-wrap') || container;
+  // A static image of the figure. It stays visible while the 3D model loads and
+  // remains as the fallback when WebGL or the model is unavailable, so visitors
+  // always see the human figure (never an empty box or a placeholder shape).
+  var posterSrc = config.posterSrc || '/images/avatar/avatar-poster-480.webp';
+  var posterSrcset = config.posterSrcset || '/images/avatar/avatar-poster-480.webp 480w, /images/avatar/avatar-poster-960.webp 960w';
+  var posterAlt = config.posterAlt != null ? config.posterAlt : 'VoxSign signing avatar: a 3D human figure standing upright';
+
+  function setState(state) {
+    container.setAttribute('data-avatar-state', state);
+    if (interactHost) interactHost.setAttribute('data-avatar-state', state);
+  }
+
+  function getPoster() {
+    var img = container.querySelector('img.vx-avatar-poster');
+    if (img) return img;
+    img = document.createElement('img');
+    img.className = 'vx-avatar-poster';
+    img.src = posterSrc;
+    img.srcset = posterSrcset;
+    img.sizes = '(max-width: 900px) 70vw, 480px';
+    img.width = 480;
+    img.height = 680;
+    img.alt = posterAlt;
+    img.decoding = 'async';
+    container.appendChild(img);
+    return img;
+  }
 
   function showLoading(percent) {
     var pct = typeof percent === 'number' ? Math.max(0, Math.min(100, Math.round(percent))) : null;
@@ -34,7 +61,7 @@ export function mountAvatar(config) {
     var existing = host.querySelector('.vx-avatar-loading');
     if (!existing) {
       existing = document.createElement('div');
-      existing.className = 'vx-avatar-loading';
+      existing.className = 'vx-avatar-loading' + (container.querySelector('img.vx-avatar-poster') ? ' vx-avatar-loading--poster' : '');
       existing.setAttribute('role', 'status');
       existing.setAttribute('aria-live', 'polite');
       existing.innerHTML =
@@ -60,27 +87,12 @@ export function mountAvatar(config) {
 
   showLoading(0);
 
-  function buildFallbackSvg() {
-    return '<svg class="vx-avatar-fallback-svg" viewBox="0 0 200 200" width="180" height="180" role="img" aria-label="Hand-shape illustration">' +
-        '<g class="vx-hand vx-hand-1">' +
-          '<rect x="80" y="90" width="40" height="60" rx="18" fill="var(' + colorVars[0] + ')"/>' +
-          '<rect x="60" y="50" width="16" height="55" rx="8" fill="var(' + colorVars[0] + ')" transform="rotate(-8 68 78)"/>' +
-          '<rect x="80" y="35" width="16" height="65" rx="8" fill="var(' + colorVars[0] + ')"/>' +
-          '<rect x="102" y="35" width="16" height="65" rx="8" fill="var(' + colorVars[0] + ')"/>' +
-          '<rect x="124" y="45" width="16" height="60" rx="8" fill="var(' + colorVars[0] + ')" transform="rotate(8 132 75)"/>' +
-          '<rect x="55" y="95" width="30" height="15" rx="7" fill="var(' + colorVars[0] + ')" transform="rotate(-35 70 102)"/>' +
-        '</g>' +
-        '<g class="vx-hand vx-hand-2">' +
-          '<rect x="80" y="100" width="42" height="55" rx="18" fill="var(--voice, #FF6A3D)"/>' +
-          '<rect x="90" y="40" width="18" height="70" rx="9" fill="var(--voice, #FF6A3D)"/>' +
-          '<rect x="60" y="105" width="24" height="16" rx="8" fill="var(--voice, #FF6A3D)"/>' +
-          '<rect x="118" y="105" width="24" height="16" rx="8" fill="var(--voice, #FF6A3D)"/>' +
-        '</g>' +
-      '</svg>';
-  }
-
-  function showFallback() {
+  function showFallback(reason) {
     hideLoading();
+    setState('fallback:' + (reason || 'unknown'));
+    if (typeof console !== 'undefined' && console.info) {
+      console.info('VoxSign avatar: showing the still image (' + (reason || 'unknown') + ')');
+    }
     if (renderer) {
       try {
         renderer.dispose();
@@ -88,7 +100,10 @@ export function mountAvatar(config) {
       } catch (e) {}
       renderer = null;
     }
-    container.innerHTML = buildFallbackSvg();
+    var canvases = container.querySelectorAll('canvas');
+    for (var i = 0; i < canvases.length; i++) canvases[i].remove();
+    var poster = getPoster();
+    poster.hidden = false;
     container.classList.add('vx-avatar-fallback');
     if (captionEl && phrases.length) {
       captionEl.textContent = phrases[0];
@@ -110,7 +125,8 @@ export function mountAvatar(config) {
       return false;
     }
   }
-  if (!webglAvailable()) { showFallback(); return; }
+  setState('loading');
+  if (!webglAvailable()) { showFallback('no-webgl'); return; }
 
   Promise.all([
     import('three'),
@@ -125,7 +141,7 @@ export function mountAvatar(config) {
         if (typeof console !== 'undefined' && console.warn) {
           console.warn('VoxSign avatar: scene setup failed', err);
         }
-        showFallback();
+        showFallback('scene-setup');
       }
     })
     .catch(function (err) {
@@ -133,7 +149,7 @@ export function mountAvatar(config) {
         console.warn('VoxSign avatar: Three.js failed to load', err);
       }
       hideLoading();
-      showFallback();
+      showFallback('modules');
     });
 
   function initScene(THREE, GLTFLoader, DRACOLoader, motionMod) {
@@ -146,7 +162,7 @@ export function mountAvatar(config) {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch (e) {
-      showFallback();
+      showFallback('renderer');
       return;
     }
     renderer.setSize(w, h);
@@ -161,7 +177,9 @@ export function mountAvatar(config) {
       renderer.toneMappingExposure = 1.12;
     }
     renderer.domElement.setAttribute('aria-hidden', 'true');
-    container.innerHTML = '';
+    renderer.domElement.classList.add('vx-avatar-canvas');
+    // The canvas stays transparent over the poster until the model has rendered.
+    renderer.domElement.style.opacity = '0';
     container.appendChild(renderer.domElement);
 
     scene.add(new THREE.HemisphereLight(0xfff0e6, 0x4a5a6e, 1.05));
@@ -189,7 +207,8 @@ export function mountAvatar(config) {
       if (useJsDecoder) {
         dracoLoader.setDecoderConfig({ type: 'js' });
       }
-      dracoLoader.preload();
+      // No preload(): the decoder (wasm) is fetched only if the model is
+      // Draco-compressed. avatar.glb is not, so nothing extra is downloaded.
 
       var loader = new GLTFLoader();
       loader.setDRACOLoader(dracoLoader);
@@ -199,6 +218,7 @@ export function mountAvatar(config) {
           hideLoading();
           onModelLoaded(gltf, THREE, scene, camera, renderer, motionMod);
           dracoLoader.dispose();
+          revealCanvas();
         },
         onProgress,
         function (err) {
@@ -213,7 +233,7 @@ export function mountAvatar(config) {
           if (typeof console !== 'undefined' && console.warn) {
             console.warn('VoxSign avatar: model failed to decode', err);
           }
-          showFallback();
+          showFallback('model');
         }
       );
     }
@@ -227,6 +247,21 @@ export function mountAvatar(config) {
       camera.aspect = nw / nh;
       camera.updateProjectionMatrix();
       renderer.setSize(nw, nh);
+    });
+  }
+
+  function revealCanvas() {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!renderer) return;
+        renderer.domElement.style.transition = 'opacity .35s ease';
+        renderer.domElement.style.opacity = '1';
+        var poster = container.querySelector('img.vx-avatar-poster');
+        if (poster) setTimeout(function () { poster.hidden = true; }, 400);
+        container.classList.add('vx-avatar-ready');
+        if (interactHost) interactHost.classList.add('is-3d');
+        setState('ready');
+      });
     });
   }
 
