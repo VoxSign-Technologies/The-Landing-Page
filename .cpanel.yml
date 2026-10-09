@@ -1,0 +1,8 @@
+---
+# cPanel Git Version Control: "Deploy HEAD Commit" runs these tasks from the
+# repository checkout (/home/voxsignco/Landing-Page-VoxSign).
+# Publishes the static site into the main domain's document root only.
+# It never writes to /home/voxsignco/pearledu-app (the PearlEdu app).
+deployment:
+  tasks:
+    - export VOXSIGN_DOCROOT=/home/voxsignco/public_html; /bin/bash ./scripts/deploy.sh
