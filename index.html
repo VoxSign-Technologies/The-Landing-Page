@@ -404,8 +404,8 @@
 </style>
 <script type="module">
   // The poster image above is the first paint (and the fallback). The 3D model
-  // (three.js + a 4 MB glTF) loads only after the page has loaded, once the
-  // hero is on or near the screen. With reduced motion or data saver on, it
+  // (three.js + a 4 MB glTF) loads only after the page has loaded and the
+  // visitor interacts (or 3.5 s pass), once the hero is on or near the screen. With reduced motion or data saver on, it
   // waits for the visitor to ask for it.
   import { mountAvatar } from '/js/vx-avatar-loader.js?v=18';
   var wrap = document.querySelector('.vx-hero-avatar-wrap');
@@ -433,9 +433,20 @@
     });
   }
 
+  // Start on the visitor's first scroll, touch, key or mouse move, or 3.5 s
+  // after load, whichever comes first. The 3D work then can't hold up the
+  // hero text paint (LCP) or the first interactions.
   function whenIdle(fn) {
-    if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 2500 });
-    else setTimeout(fn, 300);
+    var done = false, evs = ['pointerdown', 'touchstart', 'scroll', 'keydown', 'mousemove'];
+    function go() {
+      if (done) return;
+      done = true;
+      evs.forEach(function (e) { removeEventListener(e, go, { passive: true }); });
+      if ('requestIdleCallback' in window) requestIdleCallback(fn, { timeout: 1500 });
+      else setTimeout(fn, 50);
+    }
+    evs.forEach(function (e) { addEventListener(e, go, { passive: true, once: true }); });
+    setTimeout(go, 3500);
   }
 
   function startWhenVisible() {
