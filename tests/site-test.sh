@@ -96,6 +96,50 @@ for p in / /products /products/pearledu; do
     curl -s "${HDR[@]}" "$BASE$p"
 done | grep -oE 'href="https://[^"]+"' | grep -v -E 'fonts\.(googleapis|gstatic)\.com|api\.fontshare\.com' | sort | uniq -c
 
+echo "==> SEO and page structure"
+ok() { pass=$((pass + 1)); }
+bad() { echo "  FAIL $1"; fail=1; }
+res() { if [ "$1" = 0 ]; then ok; else bad "$2"; fi; }   # res $? "message"
+titles=""
+for p in / /products /products/pearledu; do
+    html="$(curl -s "${HDR[@]}" "$BASE$p")"
+    want="https://voxsign.co.ug$p"
+    n() { printf '%s' "$html" | grep -o -E "$1" | wc -l; }
+    if [ "$(n '<title>[^<]+</title>')" = 1 ]; then ok; else bad "$p: want exactly one <title>"; fi
+    if [ "$(n '<meta name="description" content="[^"]{50,170}"')" = 1 ]; then ok; else bad "$p: want one meta description of 50-170 chars"; fi
+    printf '%s' "$html" | grep -q "<link rel=\"canonical\" href=\"$want\""; res $? "$p: canonical is not $want"
+    printf '%s' "$html" | grep -q "<meta property=\"og:url\" content=\"$want\""; res $? "$p: og:url is not $want"
+    printf '%s' "$html" | grep -q '<meta property="og:image" content="https://voxsign.co.ug/images/voxsign/og-card.png"'; res $? "$p: og:image"
+    printf '%s' "$html" | grep -q '<meta name="twitter:card" content="summary_large_image"'; res $? "$p: twitter:card"
+    if printf '%s' "$html" | python3 -c '
+import sys, re, json
+blocks = re.findall(r"<script type=\"application/ld\+json\">(.*?)</script>", sys.stdin.read(), re.S)
+types = [g["@type"] for b in blocks for g in json.loads(b).get("@graph", [])]
+sys.exit(0 if "Organization" in types else 1)'; then ok; else bad "$p: JSON-LD missing, invalid or without Organization"; fi
+    if [ "$(n '<h1[ >]')" = 1 ]; then ok; else bad "$p: want exactly one <h1>"; fi
+    # heading levels never skip on the way down (h2 -> h4 etc.)
+    levels="$(printf '%s' "$html" | grep -o -E '<h[1-6][ >]' | tr -dc '1-6\n')"
+    prev=0; skip=""
+    for l in $levels; do [ "$l" -gt $((prev + 1)) ] && skip="h$prev->h$l"; prev=$l; done
+    if [ -z "$skip" ]; then ok; else bad "$p: heading level skips ($skip)"; fi
+    # every img has an alt attribute
+    ! printf '%s' "$html" | grep -o '<img[^>]*>' | grep -v -q 'alt='; res $? "$p: <img> without alt"
+    # in-page anchors point at ids that exist on this page
+    for a in $(printf '%s' "$html" | grep -o -E 'href="#[^"]+"' | sed -E 's/href="#(.*)"/\1/' | sort -u); do
+        printf '%s' "$html" | grep -q "id=\"$a\""; res $? "$p: href=\"#$a\" has no matching id"
+    done
+    titles+="$(printf '%s' "$html" | grep -o '<title>[^<]*')"$'\n'
+done
+if [ "$(printf '%s' "$titles" | sort -u | grep -c .)" = 3 ]; then ok; else bad "page titles are not unique"; fi
+sm="$(curl -s "${HDR[@]}" "$BASE/sitemap.xml")"
+if [ "$(printf '%s' "$sm" | grep -c '<lastmod>')" -ge 3 ]; then ok; else bad "sitemap.xml lacks lastmod"; fi
+curl -s "${HDR[@]}" "$BASE/robots.txt" | grep -q '^Sitemap: https://voxsign.co.ug/sitemap.xml'; res $? "robots.txt does not point at the sitemap"
+expect /images/avatar/avatar-poster-480.webp 200
+expect /images/avatar/avatar-poster-960.webp 200
+expect /images/voxsign/og-card.png 200
+expect /no-such-page-xyz 404
+curl -s "${HDR[@]}" "$BASE/no-such-page-xyz" | grep -q 'name="robots" content="noindex'; res $? "404 page is not noindex"
+
 echo "==> headers"
 h="$(curl -sI "${HDR[@]}" "$BASE/")"
 for hdr in content-security-policy x-content-type-options x-frame-options strict-transport-security; do
