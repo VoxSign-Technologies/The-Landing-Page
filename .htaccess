@@ -1,44 +1,80 @@
-# Never serve env files even if one is copied into the document root by mistake.
-<FilesMatch "^\.env">
+# voxsign.co.ug — static marketing site (no PHP, no Laravel).
+# Deployed into /home/voxsignco/public_html by scripts/deploy.sh.
+
+Options -MultiViews -Indexes
+DirectoryIndex index.html
+# Pages live at /products/index.html etc. but are served without a trailing
+# slash (/products, /products/pearledu), the URLs the old Laravel site used.
+DirectorySlash Off
+ErrorDocument 404 /404.html
+
+AddType model/gltf-binary .glb
+AddType application/wasm .wasm
+AddType application/manifest+json .webmanifest
+
+# Never serve dotfiles (other than .well-known), env files, backups or repo files.
+<FilesMatch "(^\.(?!well-known)|\.(bak|orig|swp|log|sh|yml|yaml|md|blade\.php)$|~$)">
     <IfModule mod_authz_core.c>
         Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
     </IfModule>
 </FilesMatch>
 
 <IfModule mod_rewrite.c>
-    AddType model/gltf-binary .glb
-    AddType application/wasm .wasm
-
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
+    RewriteBase /
 
-    # Force HTTPS when behind cPanel / proxy TLS termination.
+    # Force HTTPS (works behind cPanel / proxy TLS termination).
     RewriteCond %{HTTPS} !=on
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    # Let cPanel AutoSSL / ACME challenges through untouched.
+    RewriteRule ^\.well-known/ - [L]
 
-    # Handle X-XSRF-Token Header
-    RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+    # Old Laravel front-controller URLs and direct index.html hits -> clean URL.
+    RewriteRule ^index\.php$ / [L,R=301]
+    RewriteCond %{THE_REQUEST} \s/+((?:[^\s?]*/)?)index\.html[\s?]
+    RewriteRule ^ /%1 [L,R=301,NE]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
+    # Strip a trailing slash: /products/ -> /products (the old site did the same).
+    RewriteCond %{REQUEST_URI} ^(.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    # The contact form used to post to /contact; the contact details are on the home page.
+    RewriteRule ^contact$ /#contact [L,R=301,NE]
+
+    # PearlEdu app paths used to answer on this domain because the Laravel app
+    # was bootstrapped from public_html. Send them to the app's own host.
+    # 308 keeps the method and body, so payment webhooks and form posts survive.
+    RewriteRule ^(academic-years|account|admin|admissions|analytics|announcements|api|apply|assessment|attendance|audit|build|cbt|classes|clinic|console|curriculum|emis|enrollments|expenditure|fees|forgot-password|health|helpdesk|home|hostel|hr|identity-register|impersonation|inventory|invitations|library|lms|login|logout|messages|migrate|my-class|my-teaching|notifications|onboard|payroll|performance|platform|portal|promotions|reset-password|session|settings|setup|sms|staff|staff-clock|storage|students|subjects|teaching-assignments|terms|timetable|transport|up|webhooks)(/.*)?$ https://pearledu.voxsign.co.ug%{REQUEST_URI} [L,R=308,NE]
+
+    # PearlEdu app assets that used to be copied here; they live on the app host.
+    RewriteRule ^(manifest\.webmanifest|css/mobile-app\.css|js/(offline-first|idle-session|flash-toast|staff-clock-scanner|header-dropdowns|vx-avatar-scroll-guide|vx-preloader)\.js|images/auth/.+)$ https://pearledu.voxsign.co.ug%{REQUEST_URI} [L,R=301,NE]
+
+    # Clean page URLs: /products -> products/index.html.
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_FILENAME}/index.html -f
+    RewriteRule ^(.+)$ $1/index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:"
+
+    # Pages must always be revalidated.
+    <FilesMatch "\.(html|xml|txt)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+    # Versioned/static assets can be cached.
+    <FilesMatch "\.(js|css|png|jpe?g|webp|svg|ico|glb|wasm)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+    # The retired service worker must always be revalidated too.
+    <FilesMatch "^sw\.js$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
 </IfModule>
