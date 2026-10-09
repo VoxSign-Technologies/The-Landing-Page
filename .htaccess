@@ -69,12 +69,24 @@ AddType application/manifest+json .webmanifest
     <FilesMatch "\.(html|xml|txt)$">
         Header set Cache-Control "no-cache"
     </FilesMatch>
-    # Versioned/static assets can be cached.
-    <FilesMatch "\.(js|css|png|jpe?g|webp|svg|ico|glb|wasm)$">
+    # Scripts and styles: a week (pages reference them with ?v= when they change).
+    <FilesMatch "\.(js|mjs|css)$">
         Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+    # Images, the avatar model and fonts change rarely: 30 days.
+    <FilesMatch "\.(png|jpe?g|webp|avif|gif|svg|ico|glb|wasm|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>
     # The retired service worker must always be revalidated too.
     <FilesMatch "^sw\.js$">
         Header set Cache-Control "no-cache"
     </FilesMatch>
+</IfModule>
+
+# Compress text and the avatar model (avatar.glb is 4 MB raw, ~1.4 MB gzipped).
+# LiteSpeed already compresses HTML/CSS/JS; this adds the model and wasm types.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml image/svg+xml
+    AddOutputFilterByType DEFLATE text/javascript application/javascript application/json application/manifest+json
+    AddOutputFilterByType DEFLATE model/gltf-binary application/wasm
 </IfModule>
