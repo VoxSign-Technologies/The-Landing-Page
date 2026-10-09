@@ -1,13 +1,6 @@
-/**
- * heightFraction  how much of the model's height fills the frame
- * padding         breathing room multiplier on the camera distance
- * floorBias       0 centres the framed region, 1 pushes the figure down so the
- *                 feet sit near the lower edge and the figure looks planted
- */
 var FRAME_PRESETS = {
-  upper: { heightFraction: 0.62, padding: 1.4, floorBias: 0.18 },
-  torso: { heightFraction: 0.78, padding: 1.32, floorBias: 0.22 },
-  full: { heightFraction: 1, padding: 1.18, floorBias: 0.3 }
+  upper: { heightFraction: 0.62, padding: 1.5 },
+  full: { heightFraction: 1, padding: 1.3 }
 };
 
 export function mountAvatar(config) {
@@ -17,9 +10,7 @@ export function mountAvatar(config) {
   var mode = config.mode || 'cycle';
   var frame = config.frame || 'upper';
   var interactive = !!config.interactive;
-  // Idle spin is off unless a caller explicitly asks for it. A signing figure
-  // that turns on its own reads as a spinning object, not a person.
-  var autoRotate = config.autoRotate === true;
+  var autoRotate = config.autoRotate !== false && !!config.interactive;
   var preset = FRAME_PRESETS[frame] || FRAME_PRESETS.upper;
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var captionEl = config.captionId ? document.getElementById(config.captionId) : null;
@@ -125,7 +116,7 @@ export function mountAvatar(config) {
     import('three'),
     import('three/addons/loaders/GLTFLoader.js'),
     import('three/addons/loaders/DRACOLoader.js'),
-    import('/js/vx-avatar-motion.js?v=9')
+    import('/js/vx-avatar-motion.js?v=8')
   ])
     .then(function (mods) {
       try {
@@ -258,11 +249,6 @@ export function mountAvatar(config) {
 
     var targetHeight = size.y * preset.heightFraction;
     var fitCenterY = frame === 'full' ? center.y : box.max.y - targetHeight / 2;
-
-    // Lower the aim point so the figure sits on the bottom of the frame with
-    // headroom above, the way a person standing in a doorway is framed.
-    var bias = typeof preset.floorBias === 'number' ? preset.floorBias : 0;
-    fitCenterY += targetHeight * bias * 0.5;
 
     var vFov = camera.fov * (Math.PI / 180);
     var hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
@@ -474,48 +460,6 @@ export function mountAvatar(config) {
     });
   }
 
-
-  /**
-   * Draws a soft contact shadow on the floor under the figure.
-   * Without it the model reads as an object hanging in space, which is the main
-   * reason the hero looked like it was floating.
-   */
-  function addContactShadow(THREE, scene, root) {
-    var box = new THREE.Box3().setFromObject(root);
-    var size = box.getSize(new THREE.Vector3());
-    var center = box.getCenter(new THREE.Vector3());
-
-    var canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 256;
-    var ctx = canvas.getContext('2d');
-    var g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0, 'rgba(0,0,0,0.42)');
-    g.addColorStop(0.45, 'rgba(0,0,0,0.16)');
-    g.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 256, 256);
-
-    var tex = new THREE.CanvasTexture(canvas);
-    if (THREE.SRGBColorSpace && 'colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
-
-    var radius = Math.max(size.x, size.z) * 0.95;
-    var plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(radius * 2, radius * 1.35),
-      new THREE.MeshBasicMaterial({
-        map: tex,
-        transparent: true,
-        depthWrite: false,
-        toneMapped: false
-      })
-    );
-    plane.rotation.x = -Math.PI / 2;
-    plane.position.set(center.x, box.min.y + 0.002, center.z);
-    plane.renderOrder = -1;
-    plane.name = 'vxContactShadow';
-    scene.add(plane);
-    return plane;
-  }
-
   function onModelLoaded(gltf, THREE, scene, camera, renderer, motionMod) {
     var root = gltf.scene;
     scene.add(root);
@@ -528,11 +472,6 @@ export function mountAvatar(config) {
       fitCameraToModel(THREE, root, camera);
     } catch (e) {
       if (typeof console !== 'undefined' && console.warn) console.warn('VoxSign avatar: camera fit failed', e);
-    }
-    try {
-      addContactShadow(THREE, scene, root);
-    } catch (e) {
-      if (typeof console !== 'undefined' && console.warn) console.warn('VoxSign avatar: contact shadow failed', e);
     }
     try {
       applyRealisticSkin(THREE, root, renderer, scene, camera);
@@ -733,6 +672,9 @@ export function mountAvatar(config) {
         dragState.yawVel *= 0.92;
       } else {
         dragState.yawVel = 0;
+        if (autoRotate && !dragState.userTurned && !reduceMotion && !nowMotion) {
+          dragState.yaw += 0.0022;
+        }
       }
     }
     root.rotation.y = dragState.yaw;
@@ -831,8 +773,13 @@ export function mountAvatar(config) {
         var m = window.__VX_AVATAR_MOTION__;
         if (m) { m.energy = 0.25; m.velocity = 0; }
       }
-      root.rotation.y = dragState.yaw;
-      root.rotation.x = dragState.pitch || 0;
+      if (autoRotate && !dragState.active && !dragState.userTurned) {
+        dragState.yaw += 0.0015;
+        root.rotation.y = dragState.yaw;
+      } else {
+        root.rotation.y = dragState.yaw;
+        root.rotation.x = dragState.pitch || 0;
+      }
       renderer.render(scene, camera);
       requestAnimationFrame(tick);
     }
