@@ -78,10 +78,11 @@ done | grep -oE "(href|src)=\"/[^\"#]*\"|'/(js|vendor|models)/[^']*'|\"/(js|vend
 {
     echo /vendor/three-0.170.0/addons/loaders/GLTFLoader.js
     echo /vendor/three-0.170.0/addons/loaders/DRACOLoader.js
+    echo /vendor/draco/1.5.7/draco_decoder.js
     echo /vendor/draco/1.5.7/draco_decoder.wasm
     echo /vendor/draco/1.5.7/draco_wasm_wrapper.js
     echo /js/vx-avatar-motion.js
-    for t in skin-body skin-face skin-lips skin-roughness; do echo "/models/textures/$t.png"; done
+    for t in skin-body skin-face skin-lips skin-roughness; do echo "/models/textures/$t.webp"; done
 } >> "$tmp"
 while read -r u; do
     case "$u" in */) continue ;; esac   # directory prefixes (import map, decoder path)
@@ -146,8 +147,12 @@ for hdr in content-security-policy x-content-type-options x-frame-options strict
     if echo "$h" | grep -qi "^$hdr:"; then pass=$((pass + 1)); else echo "  FAIL missing $hdr"; fail=1; fi
 done
 if echo "$h" | grep -qi '^set-cookie:'; then echo "  FAIL / sets a cookie"; fail=1; else pass=$((pass + 1)); fi
-ct="$(curl -sI "${HDR[@]}" "$BASE/models/avatar.glb" | grep -i '^content-type:' | tr -d '\r')"
-case "$ct" in *model/gltf-binary*) pass=$((pass + 1)) ;; *) echo "  FAIL avatar.glb content-type: $ct"; fail=1 ;; esac
+ct="$(curl -sI "${HDR[@]}" "$BASE/models/avatar-v2.glb" | grep -i '^content-type:' | tr -d '\r')"
+case "$ct" in *model/gltf-binary*) pass=$((pass + 1)) ;; *) echo "  FAIL avatar-v2.glb content-type: $ct"; fail=1 ;; esac
+# The model is Draco-compressed in the file itself, so its size does not depend
+# on the server compressing it (the live LiteSpeed host does not gzip .glb).
+len="$(curl -s "${HDR[@]}" -o /dev/null -w '%{size_download}' "$BASE/models/avatar-v2.glb")"
+if [ "${len:-0}" -gt 0 ] && [ "$len" -lt 1500000 ]; then pass=$((pass + 1)); else echo "  FAIL avatar-v2.glb is $len bytes (want < 1.5 MB)"; fail=1; fi
 
 echo
 echo "passed: $pass"

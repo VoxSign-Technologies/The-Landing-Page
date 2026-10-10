@@ -83,7 +83,8 @@ AddType application/manifest+json .webmanifest
     </FilesMatch>
 </IfModule>
 
-# Compress text and the avatar model (avatar.glb is 4 MB raw, ~1.4 MB gzipped).
+# Compress text (and the avatar model where the server allows it; avatar-v2.glb
+# is Draco-compressed already, ~430 KB, so it does not depend on this).
 # LiteSpeed already compresses HTML/CSS/JS; this adds the model and wasm types.
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml image/svg+xml
