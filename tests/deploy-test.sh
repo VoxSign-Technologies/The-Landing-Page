@@ -48,7 +48,7 @@ echo "==> real deploy"
 VOXSIGN_DOCROOT="$DOCROOT" bash "$REPO_ROOT/scripts/deploy.sh" > "$SANDBOX/deploy.log"
 
 for f in index.html 404.html products/index.html products/pearledu/index.html robots.txt sitemap.xml sw.js \
-         favicon.ico js/vx-avatar-loader.js models/avatar.glb vendor/three-0.170.0/three.module.js images/voxsign/team-victor.jpg; do
+         favicon.ico js/vx-avatar-loader.js models/avatar-v2.glb vendor/three-0.170.0/three.module.js images/voxsign/team-victor.jpg; do
     check "published $f" "cmp -s '$REPO_ROOT/$f' '$DOCROOT/$f'"
 done
 for f in .git .cpanel.yml README.md scripts drafts tests; do

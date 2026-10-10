@@ -17,7 +17,7 @@ export function mountAvatar(config) {
   var phrases = config.phrases || [];
   var poses = config.poses || {};
   var poseOrder = config.poseOrder || Object.keys(poses);
-  var modelUrl = config.modelUrl || '/models/avatar.glb';
+  var modelUrl = config.modelUrl || '/models/avatar-v2.glb';
   var decoderPath = config.decoderPath || '/vendor/draco/1.5.7/';
   if (decoderPath.slice(-1) !== '/') decoderPath += '/';
   var renderer = null;
@@ -201,14 +201,16 @@ export function mountAvatar(config) {
       }
     }
 
-    function loadGltf(useJsDecoder) {
+    // The model is Draco-compressed (models/avatar-v2.glb, ~430 KB instead of
+    // 4 MB). Decode with Draco's plain-JS decoder: the site CSP has no
+    // 'wasm-unsafe-eval', so the WASM decoder would be refused, and the JS
+    // decoder is smaller over the wire anyway (~134 KB brotli vs ~297 KB of
+    // uncompressed wasm). Decoding runs in a worker (blob:, allowed by
+    // worker-src), off the main thread.
+    function loadGltf() {
       var dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath(decoderPath);
-      if (useJsDecoder) {
-        dracoLoader.setDecoderConfig({ type: 'js' });
-      }
-      // No preload(): the decoder (wasm) is fetched only if the model is
-      // Draco-compressed. avatar.glb is not, so nothing extra is downloaded.
+      dracoLoader.setDecoderConfig({ type: 'js' });
 
       var loader = new GLTFLoader();
       loader.setDRACOLoader(dracoLoader);
@@ -223,22 +225,15 @@ export function mountAvatar(config) {
         onProgress,
         function (err) {
           dracoLoader.dispose();
-          if (!useJsDecoder) {
-            if (typeof console !== 'undefined' && console.warn) {
-              console.warn('VoxSign avatar: Draco wasm decode failed, retrying with JS decoder', err);
-            }
-            loadGltf(true);
-            return;
-          }
           if (typeof console !== 'undefined' && console.warn) {
-            console.warn('VoxSign avatar: model failed to decode', err);
+            console.warn('VoxSign avatar: model failed to load or decode', err);
           }
           showFallback('model');
         }
       );
     }
 
-    loadGltf(false);
+    loadGltf();
 
     window.addEventListener('resize', function () {
       if (!renderer) return;
@@ -429,10 +424,10 @@ export function mountAvatar(config) {
       }, undefined, function () { pending -= 1; });
     }
 
-    loadMap('body', '/models/textures/skin-body.png', true);
-    loadMap('face', '/models/textures/skin-face.png', true);
-    loadMap('lips', '/models/textures/skin-lips.png', true);
-    loadMap('rough', '/models/textures/skin-roughness.png', false);
+    loadMap('body', '/models/textures/skin-body.webp', true);
+    loadMap('face', '/models/textures/skin-face.webp', true);
+    loadMap('lips', '/models/textures/skin-lips.webp', true);
+    loadMap('rough', '/models/textures/skin-roughness.webp', false);
 
     function skinMat(mapKey, tintHex, roughness) {
       var Mat = THREE.MeshPhysicalMaterial || THREE.MeshStandardMaterial;
