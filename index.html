@@ -407,7 +407,7 @@
   // (three.js + a 4 MB glTF) loads only after the page has loaded and the
   // visitor interacts (or 3.5 s pass), once the hero is on or near the screen. With reduced motion or data saver on, it
   // waits for the visitor to ask for it.
-  import { mountAvatar } from '/js/vx-avatar-loader.js?v=18';
+  import { mountAvatar } from '/js/vx-avatar-loader.js?v=19';
   var wrap = document.querySelector('.vx-hero-avatar-wrap');
   var btn = wrap && wrap.querySelector('.vx-avatar-load-btn');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -427,7 +427,7 @@
       autoRotate: !reduce,
       width: 480,
       height: 680,
-      modelUrl: '/models/avatar.glb',
+      modelUrl: '/models/avatar-v2.glb',
       decoderPath: '/vendor/draco/1.5.7/',
       posterAlt: '',
     });
