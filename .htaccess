@@ -1,4 +1,4 @@
-# voxsign.co.ug — static marketing site (no PHP, no Laravel).
+# voxsign.co.ug - static marketing site (no PHP, no Laravel).
 # Deployed into /home/voxsignco/public_html by scripts/deploy.sh.
 
 Options -MultiViews -Indexes

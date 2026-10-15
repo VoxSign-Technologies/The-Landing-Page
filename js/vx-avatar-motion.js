@@ -151,7 +151,7 @@ export function createAvatarMotion(THREE, root, options) {
   var tmpQ = new THREE.Quaternion();
   var tmpE = new THREE.Euler();
 
-  // Public channel — scroll guide / page scripts can write here anytime
+  // Public channel - scroll guide / page scripts can write here anytime
   if (!window.__VX_AVATAR_MOTION__) {
     window.__VX_AVATAR_MOTION__ = {
       pose: 'hero',

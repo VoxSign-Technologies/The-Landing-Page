@@ -1,4 +1,4 @@
-# VoxSign — marketing site (voxsign.co.ug)
+# VoxSign - marketing site (voxsign.co.ug)
 
 The static marketing site for VoxSign. Plain HTML, CSS and JS. There is no
 PHP, Laravel or build step.
